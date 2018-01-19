@@ -15,8 +15,11 @@ ang_sep <- function(body_tps_file, limb_tps_file, smooth = as.integer(5)) {
   langle_recor <- langle_smooth[(t_len - t_len/2 + 1):t_len, ]
   
   # define mid of power stroke and mid of recovery stroke, by ant2
-  power_mid_idx <- which.max(langle_power[, 2]) + round((which.min(langle_smooth[, 2]) - which.max(langle_power[, 2]))/2)
-  recor_mid_idx <- which.min(langle_smooth[, 2]) + round((t_len/2 + which.max(langle_recor[, 2]) - which.min(langle_smooth[, 2]))/2)
+  power_mid_idx <- which.max(langle_power[, 2]) + 
+        round((which.min(langle_smooth[, 2]) - which.max(langle_power[, 2]))/2)
+  recor_mid_idx <- which.min(langle_smooth[, 2]) + 
+        round((t_len/2 + which.max(langle_recor[, 2]) - 
+                 which.min(langle_smooth[, 2]))/2)
   
   # calculate angular separation
   ang_sep = kt$tsangle(body_land, limb_land)
