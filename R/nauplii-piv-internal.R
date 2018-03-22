@@ -62,7 +62,16 @@ vf2surface <- function(vf, out = c('u', 'v')) {
   return(list(x = x, y = y, z = z))
 }
 
+# a small covenient wrapper to turn list of x and y into a 2column xy matrix
 xycoords2mat <- function(xycoord) {
   matrix(unlist(xycoord), length(xycoord$x), 2, 
          dimnames = list(NULL, c('x', 'y')))
+}
+
+# a small covenient wrapper for diff()
+dif <- function(x, lag = 2, differences = 1) {
+  out <- rep(NA, length(x))
+  idx <- c(floor((1+lag/2)):floor((length(x)-lag/2)))
+  out[idx] <- diff(x, lag = lag, differences = differences)
+  out
 }
