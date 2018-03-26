@@ -1,0 +1,7 @@
+language: r
+warnings_are_errors: true
+sudo: false
+before_install:
+  - pip install numpy matplotlib
+r_github_packages: jinyung/npiv
+ 
