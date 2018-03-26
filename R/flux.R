@@ -1,4 +1,5 @@
-flux <- function(body_tps_file, vf_dir, vect_scale, body_width, scale) {
+flux <- function(body_tps_file, vf_dir, vect_scale, body_width, scale, 
+                 plot = TRUE) {
   
   # read tps
   body_tps <- kt$readtps(body_tps_file)
@@ -54,7 +55,9 @@ flux <- function(body_tps_file, vf_dir, vect_scale, body_width, scale) {
   unit_normv <- t(apply(normv, 1, unitv))  # unit normal vector
   
   # determine direction of unit normal vector by dot product with tail vector
-  unv_direction <- sign(cent_tail_vect[1, ] %*% unit_normv[1, ])  # any will do, the rest same
+  unv_direction <- NULL
+  for (i in 1:dim(unit_normv)[1])
+    unv_direction[i] <- sign(cent_tail_vect[i, ] %*% unit_normv[i, ])  
   
   # unit_normv should be in same direction as tail vector, so flux going into
   # labrum will be in negative direction (following convention of 'in'=-ve and
@@ -81,10 +84,30 @@ flux <- function(body_tps_file, vf_dir, vect_scale, body_width, scale) {
     projected_vf[[i]] <- interp_vf[[i]] %*% unit_normv[i,]
   }
   
-  flux <- sapply(projected_vf, sum) * body_width
+  flux <- sapply(projected_vf, sum) * body_width/length(cell.idx)
   
   if (!missing(scale))
     flux <- flux * scale * scale
+  
+  # optional plot check
+  if (plot) {
+    for (i in seq_along(id)) {
+      plot(body_land[, , i], asp = 1, ylim = c(0, 1024), xlim = c(0, 1280), 
+           xlab = 'x', ylab = 'y')
+      segments(flux_line_pt1[i, 1], flux_line_pt1[i, 2], 
+               flux_line_pt2[i, 1], flux_line_pt2[i, 2], 
+               col = 2)
+      for (j in 1:8)
+        arrow(xycoords2mat(interp_ln[[i]])[j, ], 
+              xycoords2mat(interp_ln[[i]])[j, ] + interp_vf[[i]][j, ]  * 10000, 
+              length = 0.02, col = "gray")
+      for (j in 1:8)
+        arrow(xycoords2mat(interp_ln[[i]])[j, ], 
+              xycoords2mat(interp_ln[[i]])[j, ] + unit_normv[i,] * 
+                projected_vf[[i]][j, ]  * 10000, 
+              length = 0.02, col = 1)
+    }
+  }
   
   return(flux)
 }
