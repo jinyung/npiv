@@ -1,9 +1,9 @@
 # function to calculate circulation with feature of splitting the vorticity
 # field into left and right of body
 
-circulation <- function(dir, body_tps_file, dim = c(1280, 1024), 
+circulation <- function(dir, body_land, id, dim = c(1280, 1024), 
                         win_size = 16, plot = FALSE, side = c('r', 'l'), 
-                        scale, threshold) {
+                        scal, threshold) {
   
   # argument processing/ get dimension data
   side <- match.arg(side)
@@ -15,11 +15,6 @@ circulation <- function(dir, body_tps_file, dim = c(1280, 1024),
   gridy <- seq(win_size/2, ydim - win_size/2, win_size)
   gridxn <- xdim / win_size  # number of cell along width
   gridyn <- ydim / win_size  # number of cell along height
-  
-  # read body tps file, body landmarks used to define left-right
-  body_tps <- kt$readtps(body_tps_file)
-  id <- as.integer(body_tps$id)
-  body_land <- body_tps$coords
   
   # read the vorticity field files into a list
   dat_list = list()
@@ -39,9 +34,15 @@ circulation <- function(dir, body_tps_file, dim = c(1280, 1024),
   left <- right <- list()
   
   for (i in seq_along(id)) {
+
     # calculate the xy coordinates on grid on mid line
-    yy <- slope[i] * gridx + intercept[i]
-    xx <- (gridy - intercept[i]) / slope[i]
+    if (is.infinite(slope[i])) {  # solve vertical line problem
+      xx <- rep(tail_land[i, 1], gridyn)
+      yy <- gridx  # doesn't make sense but doesn't matter what value
+    } else {
+      yy <- slope[i] * gridx + intercept[i]
+      xx <- (gridy - intercept[i]) / slope[i]
+    }
     
     # determine left or right of mid line, first by calculate angle of mid-line
     ang <- angle(centroid[i, ], tail_land[i, ])  # calculate angle of tail 
@@ -97,14 +98,13 @@ circulation <- function(dir, body_tps_file, dim = c(1280, 1024),
       vor_neg <- vor_neg[abs(vor_neg) > threshold]
     }
     
-    cir_pos[i] <- sum(vor_pos * scal^2 * win_size, na.rm = TRUE)
-    cir_neg[i] <- sum(vor_neg * scal^2 * win_size, na.rm = TRUE)
+    cir_pos[i] <- sum(vor_pos * scal^2 * win_size^2, na.rm = TRUE)
+    cir_neg[i] <- sum(vor_neg * scal^2 * win_size^2, na.rm = TRUE)
   }
   
   # visual check
   if (plot == TRUE) {
-    # t_0 <- id[1]  # to calculate time based on id
-    
+
     for (i in seq_along(id)) {
       # tiff(filename = sprintf("%03d.tif", i), width = 1400, height = 1152, 
       #      res = 192, compression = 'lzw')
@@ -117,12 +117,15 @@ circulation <- function(dir, body_tps_file, dim = c(1280, 1024),
              col = 'gray40', pch = 22)
       points(dat_list[[1]]$x[right[[i]]], dat_list[[1]]$y[right[[i]]], 
              col = 1, pch = 22)
-      abline(a = intercept[i], b = slope[i], lwd = 2)
+      if (ref_vect[i, 1] == 0)
+        abline(v = tail_land[i, 1], lwd = 2)
+      else
+        abline(a = intercept[i], b = slope[i], lwd = 2)
       # legend('bottomleft', legend = paste((id[i] - t_0)*0.5, 'ms'), bg = 'white', 
       #        inset = 0.05)
       # dev.off()
     }
   }
   
-  return(list(cir_pos, cir_neg))
+  return(list(cir_pos = cir_pos, cir_neg = cir_neg))
 } 
