@@ -9,8 +9,7 @@
 # Note: the scale of the displacement used for calculation of U follows that..
 # .. of vector field
 
-calc_r <- function(dir, idlist, thre = c(0.5, 0.95),thre.len = 15, val.area, 
-                   time_scal = 1/2000) {
+calc_r <- function(dir, idlist, thre = c(0.5, 0.95), thre.len = 15, val.area) {
   
   # # frame sequence defined as specific number of frames leading to power stroke
   # frame.seq <- round(seq(from, to, length.out = num + 1))
@@ -20,7 +19,8 @@ calc_r <- function(dir, idlist, thre = c(0.5, 0.95),thre.len = 15, val.area,
   U <- list()
   for (i in seq_along(frame.seq)) {
     dat <- read_davis(file.path(dir, get_file(frame.seq[i])))
-    U[[i]] <- calc_u(dat, time_scal)
+    # U[[i]] <- calc_u(dat, time_scal)
+    U[[i]] <- calc_u(dat)
   }
   
   # set U* based on distribution of U
@@ -41,13 +41,37 @@ calc_r <- function(dir, idlist, thre = c(0.5, 0.95),thre.len = 15, val.area,
     }
   }
   
-  # # scale
-  # if (!missing(scal)) {
-  #   U.star <- U.star * scal 
-  #   S <- S * scal * scal
-  #   r <- r * scal
-  # }
-  
   # output
   return(list(r = r, S = S, u = U.star))
 }
+
+
+calc_s <- function(dir, idlist, ustar = 0.0005, val.area) {
+  
+  frame.seq <- idlist
+  
+  # read the files from sequences of frames and calculate U
+  U <- list()
+  for (i in seq_along(frame.seq)) {
+    dat <- read_davis(file.path(dir, get_file(frame.seq[i])))
+    U[[i]] <- calc_u(dat)
+  }
+  
+  s <- r <-  NULL
+  for (i in seq_along(frame.seq)) {
+    s[i] <- area <- sum(U[[i]] >= ustar) * val.area
+    r[i] <- equi_rad(area)
+  }
+
+  # output
+  return(list(r = r, s = s))
+}
+
+# provide peak_id as frame to middle of power stroke (peak power)
+# quan = which quantile, 95% u of that frame which exceed min 
+max_u <- function(dir, peak_id, quan = 0.99, min = 0.0005) {
+  dat <- read_davis(file.path(dir, get_file(peak_id)))
+  U <- calc_u(dat)
+  quantile(U[U>min], quan)
+}
+  
