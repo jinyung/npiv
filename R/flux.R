@@ -1,10 +1,32 @@
-flux <- function(body_tps_file, vf_dir, vect_scale, body_width, scale, 
-                 plot = TRUE) {
+# vf_dir: (path) directory containing the vector field output from Davis id:
+# (int) give the index to frames to be read for calculations vect_scale:
+# (numeric) where the center of the flux line should locate, aend point of body
+# centroid-tail vector after scaling with this scaling factor body_width:
+# (numeric) this control the length of the flux line, should be given in pixel
+# to match body_land scal: scale of body_width, in the same unit of displacement
+# of vector field, it is assumed that vector field is properly scaled body_land:
+# should be given in pixel relative (boolean): if true use the body as frame of
+# reference, i.e. velocity passing thru the flux line is relative to the
+# swimming speed
+
+# examples:
+# vf is in m/s, scal has to be changed to m/pixel, end result will be in m2/s
+# 
+  # body_land = unlist(body_lm[[8]])
+  # vf_dir = vf_list[8]
+  # id = id[[8]]
+  # vect_scale = vect_scale[8]
+  # body_width = body_width[8]
+  # scal = scal[8]
+  # t_stamp = tlist
+
+flux <- function(body_land, vf_dir, id, vect_scale, body_width, scal, 
+                 plot = FALSE, relative = TRUE, t_stamp) {
   
-  # read tps
-  body_tps <- kt$readtps(body_tps_file)
-  id <- as.integer(body_tps$id)
-  body_land <- body_tps$coords
+  # # read tps
+  # body_tps <- kt$readtps(body_tps_file)
+  # id <- as.integer(body_tps$id)
+  # body_land <- body_tps$coords
   
   # centroid to tail vector
   tail_land <- t(body_land[2, , ])
@@ -20,19 +42,10 @@ flux <- function(body_tps_file, vf_dir, vect_scale, body_width, scale,
   slope_ct_perp <- -1/slope_ct  # slope of perpendicular line
   intercept_ct_perp <- tail_extend[, 2] - (slope_ct_perp * tail_extend[, 1])
   
-  ## solution1
-  # # get lines from the fh, not used. body width preferred over fh width
-  # # find the interception points from these three lines
-  # left_fh_land <- t(body_land[3, , ])
-  # right_fh_land <- t(body_land[1, , ])
-  # intercept_left_fh <- left_fh_land[, 2] - (slope_ct * left_fh_land[, 1])
-  # intercept_right_fh <- right_fh_land[, 2] - (slope_ct * right_fh_land[, 1])
-  
-  ## alternative solution
   # create arbitrarily extended vectors to both sides and turn it into unit vector
   # Note: did not consider the case where y = x (vertical line)
   ext <- 50  # arbitrarily set
-  ext1 <- as.matrix(data.frame(x = ext, y = ext*slope_ct_perp))  # arbitraty vector1
+  ext1 <- as.matrix(data.frame(x = ext, y = ext * slope_ct_perp))  # arbitraty vector1
   unit_ext1 <- t(apply(ext1, 1, unitv))  # unit vector of ext1
   flux_line_pt1 <- tail_extend + unit_ext1 * body_width/2
   # neg unit vector1 gives opposite direction vector, i.e. unit_ext2 = -unit_ext1
@@ -52,7 +65,9 @@ flux <- function(body_tps_file, vf_dir, vect_scale, body_width, scale,
   # create arbitrary normal vector on interp_ln and scale to unit vector
   ext <- 50  # arbitrarily set
   normv <- as.matrix(data.frame(x = ext, y = ext*slope_ct))  # arbitraty normal vector
-  unit_normv <- t(apply(normv, 1, unitv))  # unit normal vector
+  
+  unit_normv <- t(apply(normv, 1, unitv))  # unit normal vector, with magnitude 
+                                           # of 1, doesn't matter px or mm = 1
   
   # determine direction of unit normal vector by dot product with tail vector
   unv_direction <- NULL
@@ -80,14 +95,32 @@ flux <- function(body_tps_file, vf_dir, vect_scale, body_width, scale,
                                                  xycoords2mat(interp_ln[[i]]))
     interp_vf[[i]] <- interp_vf_tmp
     
-    # projection by dot product with the normal unit vector
-    projected_vf[[i]] <- interp_vf[[i]] %*% unit_normv[i,]
+    # projection by dot prod with the normal unit vector, give magnitude w sign
+    projected_vf[[i]] <- interp_vf[[i]] %*% unit_normv[i, ]  # this is in the 
+                                                             # unit of the vf 
   }
   
-  flux <- sapply(projected_vf, sum) * body_width/length(cell.idx)
+  # change the frame of reference
+  # with 2 less value, NA-ed for first and last one
   
-  if (!missing(scale))
-    flux <- flux * scale * scale
+  cent_diff <- apply(centroid, 2, dif)
+  ref_v <- NULL
+  for (i in 1:dim(cent_diff)[1])
+    ref_v[i] <- cent_diff[i, ] %*% -unitv(cent_tail_vect[i, ])  # opposite direction to cent-tail
+  
+  if (relative == TRUE) {
+    # eudist <- function(x) sqrt(x[1]^2 + x[2]^2)
+    # displ <- apply(tail_diff, 1, eudist) * scal
+    # ref_speed <- displ / dif(t_stamp)
+    
+    # reference velocity (= nauplius body speed)
+
+    # relative velocity 
+    projected_vf <- mapply(`+`, projected_vf, ref_v * scal / dif(t_stamp), 
+                           SIMPLIFY = FALSE)
+  }
+  
+  flux <- sapply(projected_vf, sum) * (body_width * scal)/length(cell.idx)
   
   # optional plot check
   if (plot) {
@@ -108,6 +141,6 @@ flux <- function(body_tps_file, vf_dir, vect_scale, body_width, scale,
               length = 0.02, col = 1)
     }
   }
-  
   return(flux)
+  # return(list(projected_vf = projected_vf, flux=flux, ref_v = ref_v * scal / dif(t_stamp)))
 }
