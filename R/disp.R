@@ -7,9 +7,10 @@
 # filter will give undesirable result with NAs), adjust keep_len parameter.
 # Generally it is easier to remove NA than to add later
 
-disp <- function(centroid, body_land, keep_len = TRUE) {
+disp <- function(centroid, body_land, keep_len = TRUE, win_size) {
   # size of moving window
-  win_size <- 3
+  if (missing(win_size))
+    win_size <- 3
   pad <- (win_size - 1) / 2
   
   # calculate distance
@@ -21,7 +22,7 @@ disp <- function(centroid, body_land, keep_len = TRUE) {
   xy_square_sum <- apply(xy_square, 1, sum)
   xy_dist <- sqrt(xy_square_sum)
   
-  # calculate angle to determine forward/reverse
+  # calculate dot product sign to determine forward/reverse
   tail_land <- t(body_land[2, , ])
   ref_vect <- tail_land - centroid
   if (keep_len == FALSE)
@@ -30,11 +31,6 @@ disp <- function(centroid, body_land, keep_len = TRUE) {
   disp_sign <- NULL
   for (i in 1:dim(ref_vect)[1])
     disp_sign[i] <- sign(xy_diff[i, ] %*% ref_vect[i, ])  # sign(0) = 0
-  
-  # angle <- NULL
-  # for (i in 1:dim(ref_vect)[1]) 
-  #   angle[i] <- kt$vangle(xy_diff[i, ], ref_vect[i, ])
-  # disp_sign <- ifelse(angle > 90, 1, -1)  
   
   # distance times sign = displacement
   xy_disp <- xy_dist * -disp_sign  # '-' cos rev to tail is forward & vice versa
