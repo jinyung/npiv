@@ -152,7 +152,7 @@ def tlangle(body_land, limb_land, degree = True):
     nframe = body_land.shape[2]
     result = np.empty((nframe, 3))
     for i in range(nframe):
-        result[i,:] = langle(body_land[:, :, i], limb_land[:, :, i], 
+        result[i,:] = langle(body_land[:, :, i], limb_land[:, :, i],
                               degree = degree)
     return result
 
@@ -161,24 +161,24 @@ def tlangle(body_land, limb_land, degree = True):
 def sangle(body_land, limb_land, degree = True):
   """
   Calculate angular separation among the limbs
-  
+
   Returns:
     list of 1.ant1-ant2 angle, 2.ant1-mand angle and 3.ant2-mand angle
   """
   # centroid
   cen = cent(body_land)
-  
+
   # limb vectors
   limb_vect = limb_land - cen
-  
+
   # calculate for all limb combinations
   result = []
   for pair in [(0, 1), (0, 2), (1, 2)]:
-    result.append(vangle(limb_vect[pair[0], ], limb_vect[pair[1], ], 
+    result.append(vangle(limb_vect[pair[0], ], limb_vect[pair[1], ],
                   degree = degree))
   # return
   return np.array(result)
-  
+
 # ------------------
 
 def tsangle(body_land, limb_land, degree = True):
@@ -192,13 +192,13 @@ def tsangle(body_land, limb_land, degree = True):
             3rd dimension is the frames
 
     Returns:
-        limb_angle (2d numpy ndarray): 1st column is ant1 angle,
-            2nd is ant2, 3rd is mand
+        limb_angle (2d numpy ndarray): 1st column is ant1-ant2 angular
+        separation, 2nd is ant1-mand, 3rd is ant2-mand
     """
     nframe = body_land.shape[2]
     result = np.empty((nframe, 3))
     for i in range(nframe):
-        result[i,:] = sangle(body_land[:, :, i], limb_land[:, :, i], 
+        result[i,:] = sangle(body_land[:, :, i], limb_land[:, :, i],
                               degree = degree)
     return result
 
@@ -208,7 +208,7 @@ def tsangle(body_land, limb_land, degree = True):
 def smooth(y, win_size = 5):
   """
   Calculate simple moving average smoothing
-  
+
   Args:
     y (list/ 1d ndarray): series to be smoothed
     win_size (int): moving window size
@@ -216,14 +216,14 @@ def smooth(y, win_size = 5):
   box = np.ones(win_size) / win_size
   y_smooth = np.convolve(y, box, mode = 'same')
   return y_smooth
-  
+
 # ------------------
-def plot_angle(body_tps_file, limb_tps_file, t = 'id', scale = 0.5, cut = None, 
-               win_size = 5, col = [u'#1f77b4', u'#ff7f0e', u'#2ca02c'], 
+def plot_angle(body_tps_file, limb_tps_file, t = 'id', scale = 0.5, cut = None,
+               win_size = 5, col = [u'#1f77b4', u'#ff7f0e', u'#2ca02c'],
                degree = True, sub = None, axlab = True, **kwargs):
   """
   Wrapper for to plot tlangle
-  
+
   Args:
       body_tps_file(char): tps file path containing body landmarks
       limb_tps_file (char): tps file path containing limb landmarks
@@ -233,9 +233,9 @@ def plot_angle(body_tps_file, limb_tps_file, t = 'id', scale = 0.5, cut = None,
       col: control color of markers/ lines
       cut (int): index to cut first n-th frame to plot, useful for animation
       degree (bool): to express in degree if true, else in radian
-      sub (matplotlib object): for easier subplots integration 
+      sub (matplotlib object): for easier subplots integration
       axes (bool): draw axes labels if True
-  
+
   Returns:
     A plot
   """
@@ -244,17 +244,17 @@ def plot_angle(body_tps_file, limb_tps_file, t = 'id', scale = 0.5, cut = None,
   limb_tps = readtps(limb_tps_file)
   body_land = body_tps['coords']
   limb_land = limb_tps['coords']
-  
+
   # sanity check
   if len(body_tps['im']) is not len(limb_tps['im']):
-    raise ValueError('length of frames in body and limb are different. ' + 
-                     'There are %s frames in body and %s frames in limb' 
+    raise ValueError('length of frames in body and limb are different. ' +
+                     'There are %s frames in body and %s frames in limb'
                      % (len(body_tps['im']), len(limb_tps['im'])))
   if not body_tps['id']:
     if body_tps['id'] is not limb_tps['id']:
-      print('Warnings: body_tps and limb_tps has different ID! '+ 
+      print('Warnings: body_tps and limb_tps has different ID! '+
             'Did you use different time series?')
-    
+
   # calculate
   result = tlangle(body_land, limb_land, degree = degree)
   result_smooth = np.apply_along_axis(smooth, 0, result, win_size)
@@ -270,14 +270,14 @@ def plot_angle(body_tps_file, limb_tps_file, t = 'id', scale = 0.5, cut = None,
   if t is 'id':
     t = np.array(body_tps['id']).astype(int)
     t = (t - t[0]) * scale
-  
-  # set plot limit  
+
+  # set plot limit
   xlim = [min(t), max(t)]
-  ylim = [0, 190 if degree == True else 190./180.*np.pi] 
-  
+  ylim = [0, 190 if degree == True else 190./180.*np.pi]
+
   if cut is not None:
     t = t[:cut]
-      
+
   # plot
   if sub is None:
     sub = plt
@@ -286,7 +286,7 @@ def plot_angle(body_tps_file, limb_tps_file, t = 'id', scale = 0.5, cut = None,
     sub.plot(t, result_smooth[:, i], '-', color = col[i])
   sub.set_xlim(xlim)
   sub.set_ylim(ylim)
-  
+
   # label axes
   if axlab is True:
     sub.set_ylabel('Angle (%s)' % ('radian' if degree == False else 'degree'))
@@ -294,37 +294,37 @@ def plot_angle(body_tps_file, limb_tps_file, t = 'id', scale = 0.5, cut = None,
 
 # ------------------
 def kinemate(body_tps_file, limb_tps_file, img_dir, r = '5', degree = True):
-  
+
   # read the tps files
   body_tps = readtps(body_tps_file)
   limb_tps = readtps(limb_tps_file)
   body_land = body_tps['coords']
   limb_land = limb_tps['coords']
-  
+
   # create result folder
   out_dir = os.path.join(img_dir, "kinemate_output")
   if not os.path.exists(out_dir):
     os.makedirs(out_dir)
-  
+
   # loop thru images
   for i, img_list in enumerate(body_tps['im']):
     img = mpimg.imread(os.path.join(img_dir, img_list))
     fig = plt.figure(figsize = (14, 5))
-    
+
     # subplot-1: the video
     sub1 = fig.add_subplot(1, 2, 1)
     sub1.axis('off')
     sub1.imshow(img, cmap = 'gray')
-    plt.scatter(limb_land[:, 0, i], img.shape[0] - limb_land[:, 1, i],  # invert y-axis 
-                facecolors = 'none', 
+    plt.scatter(limb_land[:, 0, i], img.shape[0] - limb_land[:, 1, i],  # invert y-axis
+                facecolors = 'none',
                 edgecolors = [u'#1f77b4', u'#ff7f0e', u'#2ca02c'])
-    
+
     # subplot-2: the angle plot
     sub2 = fig.add_subplot(1, 2, 2)
-    plot_angle(body_tps_file, limb_tps_file, degree = degree, 
+    plot_angle(body_tps_file, limb_tps_file, degree = degree,
                cut = i + 1, sub = sub2)
     tmp_img_name = os.path.join(out_dir, 'tmp_%04d.jpg' % (i))
-    fig.savefig(os.path.join(out_dir, tmp_img_name), dpi = 167, 
+    fig.savefig(os.path.join(out_dir, tmp_img_name), dpi = 167,
                 bbox_inches = 'tight')
     plt.close(fig)
 
@@ -345,7 +345,7 @@ def kinemate(body_tps_file, limb_tps_file, img_dir, r = '5', degree = True):
 
 # #----------------
 # def find_maxima (x):
-# 	return (np.diff(np.sign(np.diff(x))) < 0).nonzero()[0] + 1 
-# 
+# 	return (np.diff(np.sign(np.diff(x))) < 0).nonzero()[0] + 1
+#
 # def find_minima (x):
-# 	return (np.diff(np.sign(np.diff(x))) > 0).nonzero()[0] + 1 
+# 	return (np.diff(np.sign(np.diff(x))) > 0).nonzero()[0] + 1
