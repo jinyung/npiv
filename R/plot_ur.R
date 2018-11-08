@@ -1,6 +1,8 @@
 # --- plot U* against r ---
 # result: (list) object from calc_r() function
-plot_ur <- function(result, col) {
+# ... pass arguments into matplot()
+# col: col for each time frame, default is rainbow color if not specified
+plot_ur <- function(result, col, ...) {
   
   # prevent bug from log with zeros
   if (any(result$r == 0)) {
@@ -32,11 +34,9 @@ plot_ur <- function(result, col) {
                   
   # plot
   matplot(result$r, result$u, log = "xy", pch = 16,
-          col = col,
+          col = col, xaxt = "n", yaxt = "n",
           ylim = c(10^(ymin.power), 10^(ymax.power)),
-          xlim = c(10^(xmin.power), 10^(xmax.power)),
-          xaxt = "n", yaxt = "n",
-          xlab = "r (mm)", ylab = expression(paste(U^"*"~(ms^-1))))
+          xlim = c(10^(xmin.power), 10^(xmax.power)), ...)
   yticks.power <- seq(ymin.power, ymax.power, 1)
   axis(side = 2, at = 10^(yticks.power),
        sapply(yticks.power, function(x) parse(text = paste0("10^", x))),
@@ -50,7 +50,7 @@ plot_ur <- function(result, col) {
   abline(a = a2, b = b2, col = 3)
   
   # legend
-  legend("topright", lty = 1, col = c(2, 3), bty = "n",
+  legend("bottomleft", lty = 1, col = c(2, 3), bty = "n",
          legend = c(parse(text = paste0("r^", b1)),
                     parse(text = paste0("r^", b2))))
   
