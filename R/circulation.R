@@ -1,6 +1,3 @@
-# function to calculate circulation with feature of splitting the vorticity
-# field into left and right of body
-
 circulation <- function(dir, body_land, id, dim = c(1280, 1024), 
                         win_size = 16, plot = FALSE, side = c('r', 'l'), 
                         scal, threshold) {

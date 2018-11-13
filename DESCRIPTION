@@ -1,8 +1,8 @@
 Package: npiv
 Type: Package
-Title: kinematics and hydrodynamics calculations on nauplii swimming 
+Title: Kinematics and hydrodynamics analysis on nauplii
 Version: 0.0.1
-Date: 2018-03-23
+Date: 2018-11-08
 Authors@R: c(person("Jin Yung", "Wong", 
           email = "wongjinyung@gmail.com", role = c("aut", "cre")),
   person("Benny K. K.", "Chan", email = "chankk@gate.sinica.edu.tw", 
@@ -10,7 +10,7 @@ Authors@R: c(person("Jin Yung", "Wong",
   person("K. Y. Karen", "Chan", email = "karenchan@ust.hk", role = "ths"))
 Maintainer: Wong Jin Yung <wongjinyung@gmail.com>
 Description: R package for analyses of high speed video/ 
-  particle image velocimetry of swimming nauplii
+  particle image velocimetry data of swimming nauplii
 Depends:
     R(>= 3.0.0)
 LazyLoad: yes

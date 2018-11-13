@@ -1,5 +1,20 @@
 # npiv
 
+This is a companion package to the manuscript:
+
+> Wong, J. Y., Chan, B. K. K., Chan, K. Y. K. Swimming kinematics of naupliar 
+larvae with contrasting feeding modes.
+
+Functions included in the package were developed for analyses of data generated
+from [`TPSDig2`](http://life.bio.sunysb.edu/morph/soft-dataacq.html) and
+[`DaVis`](https://www.lavision.de/en/products/davis-software/) softwares for
+kinematics and hydrodynamics analyses, respectively. `TPSDig2` is a landmark
+registration tool and was used for digitization of body and appendages
+positions. `DaVis` is a software used for particle image velocimetry, and
+outputs velocity and vorticity fields. There is no utility tools for direct data
+import from other softwares but all underlying calculations use `R`'s `matrix`
+or `array` classes of data.
+
 ## Notes on using python module from the package
 
 Functions for kinematics analysis was written in `python` and is located in
