@@ -264,3 +264,14 @@ perm_ttest <- function(x, y, perm = 999, seed = 8888, plot = FALSE) {
   }
   return(pval)
 }
+
+# utility tool to find the peak fluid speed (at certain quantile) of a frame
+# peak_id = frame to find the peak fluid speed 
+# (e.g. middle of power stroke with peak power)
+# quan = which quantile, 95% u of that frame (95% excluding the min, where u  
+# below min is regarded as noise)
+max_u <- function(dir, peak_id, quan = 0.99, min = 0.0005) {
+  dat <- read_davis(file.path(dir, get_file(peak_id)))
+  U <- calc_u(dat)
+  quantile(U[U>min], quan)
+}

@@ -1,14 +1,3 @@
-# --- calculate r as a function of U* ---
-# dir: (path) directory containing the vector field output file
-# idlist: (int vector) index to frames for calculations
-# thre: (num) threshold values to adjust U*, two values required
-# thre.len: (int) number of U* values to use
-# val.area: (num) area each velocity vector value covers in mm^2, ..
-# .. by default 16pix*16pix*(scale in mm/pix)^2
-# time_scal: (num) time interval between frames for calculation of U 
-# Note: the scale of the displacement used for calculation of U follows that..
-# .. of vector field
-
 calc_r <- function(dir, idlist, thre = c(0.5, 0.95), thre.len = 15, val.area) {
   
   # # frame sequence defined as specific number of frames leading to power stroke
@@ -65,13 +54,5 @@ calc_s <- function(dir, idlist, ustar = 0.0005, val.area) {
 
   # output
   return(list(r = r, s = s))
-}
-
-# provide peak_id as frame to middle of power stroke (peak power)
-# quan = which quantile, 95% u of that frame which exceed min 
-max_u <- function(dir, peak_id, quan = 0.99, min = 0.0005) {
-  dat <- read_davis(file.path(dir, get_file(peak_id)))
-  U <- calc_u(dat)
-  quantile(U[U>min], quan)
 }
   
