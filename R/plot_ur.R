@@ -1,7 +1,3 @@
-# --- plot U* against r ---
-# result: (list) object from calc_r() function
-# ... pass arguments into matplot()
-# col: col for each time frame, default is rainbow color if not specified
 plot_ur <- function(result, col, ...) {
   
   # prevent bug from log with zeros

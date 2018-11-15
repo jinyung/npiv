@@ -30,5 +30,5 @@ calc_s(dir, idlist, ustar = 0.0005, val.area)
 }
 
 \seealso{
-\code{\link{calc_power}}
+\code{\link{calc_power}}, \code{\link{plot_ur}}
 }

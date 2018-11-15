@@ -31,5 +31,5 @@ expression is in the form of a simple linear regression of \eqn{Y = a+bx}:
 where \code{b} can be obtained from finding the slope of the expression.
 }
 \seealso{
-\code{\link{calc_r}}
+\code{\link{calc_r}}, \code{\link{plot_ur}}
 }

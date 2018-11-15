@@ -1,14 +1,11 @@
-# result returned by type = 'matrix' is a matrix in dim of c(width, height), it
-# is the format used by graphics::image() & fields::image.plot. The format
-# returned by type = 'list' is the format used by fields::quilt.plot
-read_davis_2 <- function(dir, slice.num, type = c("df", "list"),
+read_davis_2 <- function(dir, id, type = c("df", "list"),
                          dim = c(1280, 1024), win_size = 16) {
   
   # arg proc
   type <- match.arg(type)
   
   # read
-  vor <- as.matrix(read.table(file.path(dir, get_file(slice.num)), sep = "\t", 
+  vor <- as.matrix(read.table(file.path(dir, get_file(id)), sep = "\t", 
                               skip = 1, dec = ","))
   
   # reverse the order of rows so that y axis range from 0-1000 not 1000-0
