@@ -129,7 +129,10 @@ unitv <- function(v) {
 # --- vector field format convert ---
 # turn format returned by read_davis into fields package `surface` format, with
 # y axis inverted
-vf2surface <- function(vf, out = c('u', 'v')) {
+# out: to set the output component (u/v component of vf)
+# invert: whether to invert y-axis. default is true as i set my vf origin at the
+# bottom left corner in DaVis but surface format use topleft as origin
+vf2surface <- function(vf, out = c('u', 'v'), invert = TRUE) {
   # arguments
   out <- match.arg(out)
   z <- eval(parse(text = paste0('vf$', out)))
@@ -141,8 +144,11 @@ vf2surface <- function(vf, out = c('u', 'v')) {
   z <- z[, length(y):1]
 
   # correct change of y axis problem
-  if (out == 'v')
-    z <- -z
+  if (out == 'v') {
+    if (invert)
+      z <- -z
+  }
+    
 
   # return
   return(list(x = x, y = y, z = z))
