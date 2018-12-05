@@ -1,18 +1,15 @@
-# ... arguments to be passed to FUN, default to get_fluxln
-# in case of get_fluxlinm include body_land, vect_scal, ln_width, scal,
-# ln_width_scal
 calc_flux <- function(FUN = get_fluxln, vf_path,
                       side = c('right', 'left'),
                       refv = 0, width, ...) {
   side <- match.arg(side)
   fluxlnpts <- FUN(...)
-  projected_vf <- proj_vf(fluxlnpts, vf_path = vf_path, side = side)
-  
+  projected_v <- proj_v(fluxlnpts, vf_path = vf_path, side = side)
+
   # return sum of vectors * width they represent, after adjustment by relative
   # velocity
   if (as.character(substitute(FUN)) == 'get_fluxln')
     width <- ln_width*scal*ln_width_scal
-  return((mean(projected_vf)+refv) * width)
+  return((mean(projected_v)+refv) * width)
 }
 
 tcalc_flux <-function(body_land_array, vf_dir, id, vect_scal,
@@ -20,13 +17,13 @@ tcalc_flux <-function(body_land_array, vf_dir, id, vect_scal,
                       ln_width, ln_width_scal,
                       side = c('right', 'left'),
                       t_stamp, scal) {
-  
+
   # function things
   if(dim(body_land_array)[3] != length(id))
     stop('body_land_array and id needs to contain same number of frames')
   type = match.arg(type)
   side = match.arg(side)
-  
+
   # relative
   if (relative) {
     if (missing(t_stamp) | missing (scal)) {
@@ -37,7 +34,7 @@ tcalc_flux <-function(body_land_array, vf_dir, id, vect_scal,
   } else {
     refv = 0
   }
-  
+
   # calc flux
   result <- NULL
   for (i in 1:length(id)) {
@@ -49,21 +46,11 @@ tcalc_flux <-function(body_land_array, vf_dir, id, vect_scal,
                            side = side,
                            body_land = body_land_array[, , i])
   }
-  
+
   return(result)
 }
 
-# given two points, calculate projected_vf
-# nseg = 17 is arbitrarily set
-# nseg = how many equal segments are the flux line cut into
-# xycoord use xy.coords format, with $x and $y list, with x1 and y1 as the
-# starting point and x2 and y2 as the end point of flux line vector (which
-# determine the direction of the flux)
-# default is right, because that is the correct direction for top flux estimation
-# when used with get_fluxln
-#xycoord <- get_fluxln(body_land, ln_width = 106)
-
-proj_vf <- function(xycoord, vf_path, nseg = 8, side = c('right', 'left')) {
+proj_v <- function(xycoord, vf_path, nseg = 8, side = c('right', 'left')) {
 
   side <- match.arg(side)
 
@@ -99,9 +86,9 @@ proj_vf <- function(xycoord, vf_path, nseg = 8, side = c('right', 'left')) {
 
   # projection by dot prod with the normal unit vector
   if (side == 'right')
-    projected_vf <- interp_vf %*% unormv1
+    projected_v <- interp_vf %*% unormv1
   else
-    projected_vf <- interp_vf %*% unormv2
+    projected_v <- interp_vf %*% unormv2
 
-  return(projected_vf)
+  return(projected_v)
 }
