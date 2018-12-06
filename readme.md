@@ -15,6 +15,12 @@ outputs velocity and vorticity fields. There is no utility tools for direct data
 import from other softwares but all underlying calculations use `R`'s `matrix`
 or `array` classes of data.
 
+Most of the functions were written specifically for the manuscript, especially 
+those for kinematics analyses as they rely on the specific definitions of 
+landmarks on nauplius larva. However, some functions such as 
+[`calc_flux`](R/calc_flux.R) and [`calc_r`](R/calc_r.R), are suitable for 
+general use with any velocity field data.
+
 ## Notes on using python module from the package
 
 Functions for kinematics analysis was written in `python` and is located in
