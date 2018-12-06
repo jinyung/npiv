@@ -2,19 +2,20 @@ Package: npiv
 Type: Package
 Title: Kinematics and hydrodynamics analysis on nauplii
 Version: 0.0.1
-Date: 2018-11-08
+Date: 2018-12-06
 Authors@R: c(person("Jin Yung", "Wong", 
           email = "wongjinyung@gmail.com", role = c("aut", "cre")),
   person("Benny K. K.", "Chan", email = "chankk@gate.sinica.edu.tw", 
           role = "ths"), 
   person("K. Y. Karen", "Chan", email = "karenchan@ust.hk", role = "ths"))
 Maintainer: Wong Jin Yung <wongjinyung@gmail.com>
-Description: R package for analyses of high speed video/ 
-  particle image velocimetry data of swimming nauplii
+Description: R package for analyses of high speed video or particle image 
+  velocimetry data of swimming nauplii.
+License: GPL(>= 2)
 Depends:
     R(>= 3.0.0)
 LazyLoad: yes
 URL: https://github.com/jinyung/npiv
-Imports: reticulate, signal
+Imports: reticulate, signal, fields, shape
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr

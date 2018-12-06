@@ -1,4 +1,4 @@
-
+# TODO: combine calc_refv and disp
 calc_refv <- function(body_land_array, type = c('top', 'side'),
                       scal, t_stamp) {
   type <- match.arg(type)
@@ -9,7 +9,7 @@ calc_refv <- function(body_land_array, type = c('top', 'side'),
     centroid_mat <- t(apply(body_land_array[-3, , ], 3, cent))  # 3rd lm only for direction
     tail_land_mat <- t(body_land_array[1, , ])
   }
-  
+
   cent_diff <- apply(centroid_mat, 2, dif)   # with 2 less values
   # NA-ed for 1st and last one
   # refv defined as velocity of centroid in opposite direction to cent-tail-vec

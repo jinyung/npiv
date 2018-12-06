@@ -25,6 +25,7 @@ Abbreviations for the appendages:
   \item \code{ant2} = antenna
   \item \code{mand} = mandibles
 }
-Please refer to the details of \code{\inst\python\kinematics.py} for more details of the underlying functions (\code{vangle}, \code{sangle}, \code{langle}, \code{tsangle}, \code{tlangle}).
-}
+Please refer to the details of \code{\\inst\\python\\kinematics.py} for more 
+details of the underlying functions (\code{vangle}, \code{sangle}, 
+\code{langle}, \code{tsangle}, \code{tlangle}).
 }

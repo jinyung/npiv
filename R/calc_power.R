@@ -1,6 +1,3 @@
-# --- calculate the power of r ---
-# r: numeric vector
-# u: numeric vector
 calc_power <- function(r, u) {
   fit <- lm(log10(u)~log10(r))  # power = slope of log-log model
   pval <- anova(fit)$P[1]

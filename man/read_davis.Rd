@@ -1,9 +1,8 @@
 \name{read_davis}
-\alisa{read_davis}
+\alias{read_davis}
 \alias{read_davis_2}
-\title{Read output from DaVis software}
-\description{
-
+\title{Read DaVis files}
+\description{Read vector and scalar field outputs from DaVis software
 }
 \usage{
 read_davis(file)
@@ -28,5 +27,10 @@ Vector/ scalar field
 \details{
 \code{read_davis} is suitable to read velocity field (vector field) from DaVis.
 
-\code{read_davis_2} is suitable to read vorticity field (scalar field) from DaVis. Argument \code{type} determines the resulted formats, which should be chosen based on compatility with functions from other popular packages for subsequent analysis: '\code{df}' is in the format used by \link[graphics]{image} and \link[fields]{image.plot} while '\code{list}' is in the format used by \link[fields]{quilt.plot}.
+\code{read_davis_2} is suitable to read vorticity field (scalar field) from 
+DaVis. Argument \code{type} determines the resulted formats, which should be 
+chosen based on compatility with functions from other popular packages for 
+subsequent analysis: '\code{df}' is in the format used by 
+\link[graphics]{image} and \link[fields]{image.plot} while '\code{list}' is in 
+the format used by \link[fields]{quilt.plot}.
 }

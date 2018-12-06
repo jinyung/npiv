@@ -25,5 +25,12 @@ Direction of displacement is determined by dot product between displacement
 vector and vector from centroid to tail processes (pointing in posterior 
 direction).
 
-Calculation of displacement depends on computation of lag differences (see \code{\link{diff}}) and thus the returned vector of values is shorter than the number of input time frames. \code{win_size} is equivalent to value of \code{lag} argument of \code{\link{diff}} +1. \code{keep_len} prevent the shortening of returned values by inserting \code{NA}(s) padding, which makes subsequent indexing covenient. However, presence of \code{NA}s could also interfere with subsequent processing such as smoothing (e.g. Savitzky-Golay filter in \link[signal]{sgolayfilt}). 
+Calculation of displacement depends on computation of lag differences 
+(see \code{\link{diff}}) and thus the returned vector of values is shorter than 
+the number of input time frames. \code{win_size} is equivalent to value of 
+\code{lag} argument of \code{\link{diff}} +1. \code{keep_len} prevent the 
+shortening of returned values by inserting \code{NA}(s) padding, which makes 
+subsequent indexing covenient. However, presence of \code{NA}s could also 
+interfere with subsequent processing such as smoothing (e.g. Savitzky-Golay 
+filter in \link[signal]{sgolayfilt}). 
 }
