@@ -37,7 +37,7 @@ proj_v(xycoord, vf_path, nseg = 8, side = c('right', 'left'))
   \item{ln_width}{passed to \code{\link{get_fluxln}}, single value}
   \item{ln_width_scal}{passed to \code{\link{get_fluxln}}, single value}
   \item{t_stamp}{passed to \code{\link{calc_refv}}}
-  \item{scal}{passed to \code{\link{get_fluxln}}}
+  \item{scal}{scale in length/ pixel to scale \code{width}}
   \item{xycoord}{xy coordinates of two points defining the line segment to 
     calculate flux, should in \code{R \link{xy.coords}} format}
   \item{nseg}{(int) how many segments the flux line consists of, arbitrarily set}
