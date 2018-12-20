@@ -2,7 +2,7 @@ Package: npiv
 Type: Package
 Title: Kinematics and hydrodynamics analysis on nauplii
 Version: 0.0.1
-Date: 2018-12-06
+Date: 2018-12-21
 Authors@R: c(person("Jin Yung", "Wong", 
           email = "wongjinyung@gmail.com", role = c("aut", "cre")),
   person("Benny K. K.", "Chan", email = "chankk@gate.sinica.edu.tw", 

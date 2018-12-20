@@ -27,6 +27,7 @@ dif <- function(x, lag = 2, differences = 1) {
 
 # --- create logarithmic sequence ---
 # arguments similar to seq, see `?seq`
+# https://stackoverflow.com/a/29963530
 lseq <- function(from, to, length.out) {
   exp(seq(log(from), log(to), length.out = length.out))
 }
@@ -50,7 +51,7 @@ equi_rad <- function(area) {
 # fac: (int) scaling factor for arrow length
 # scale: (num) scale in mm/pix
 plotvf <- function(dat, width = 1280, height = 1024,
-                   type = c("mm", "pixel"), fac = 30, scale, 
+                   type = c("mm", "pixel"), fac = 30, scale,
                    add = FALSE) {
 
   type <- match.arg(type)
@@ -148,7 +149,7 @@ vf2surface <- function(vf, out = c('u', 'v'), invert = TRUE) {
     if (invert)
       z <- -z
   }
-    
+
 
   # return
   return(list(x = x, y = y, z = z))
@@ -169,79 +170,6 @@ makelist <- function(n, name) {
 floor_dec <- function(x, level=1) round(x - 5*10^(-level-1), level)
 ceiling_dec <- function(x, level=1) round(x + 5*10^(-level-1), level)
 
-# --- get top view flux line ---
-# cut out from flux, for plotting of flux line
-# takes 2D matrix of landmark (single frame), unlike flux() designed for frames
-# fluxln: flux line returns in (x0, y0, x1, y1) format for input into segments()
-
-
-
-get_flux_line <- function(body_land, scaling, body_width) {
-
-  # centroid to tail vector
-  tail_land <- body_land[2, ]
-  centroid <- cent(body_land)
-  cent_tail_vect <- tail_land - centroid
-
-  # scale centroid-to-tail-vector
-  cent_tail_vect_scaled <- cent_tail_vect * scaling
-  tail_extend <- centroid + cent_tail_vect_scaled
-
-  # perpendicular line to cent-tail vect
-  slope_ct <- cent_tail_vect[2] / cent_tail_vect[1]  # cent-tail vector slope
-  slope_ct_perp <- -1/slope_ct  # slope of perpendicular line
-  intercept_ct_perp <- tail_extend[2] - (slope_ct_perp * tail_extend[1])
-
-  # create arbitrarily extended vectors to both sides and turn it into unit vector
-  # Note: did not consider the case where y = x (vertical line)
-  ext <- 50  # arbitrarily set
-  ext1 <- c(ext, ext*slope_ct_perp)  # arbitraty vector1
-  unit_ext1 <- unitv(ext1)  # unit vector of ext1
-  flux_line_pt1 <- tail_extend + unit_ext1 * body_width/2
-  # neg unit vector1 gives opposite direction vector, i.e. unit_ext2 = -unit_ext1
-  flux_line_pt2 <- tail_extend - unit_ext1 * body_width/2
-
-  # return
-  fluxln <- as.list(c(flux_line_pt1, flux_line_pt2))
-  names(fluxln) <- c('x0', 'y0', 'x1', 'y1')
-  return(fluxln)
-}
-
-get_side_flux_line <- function(body_land, scaling, body_height) {
-
-  # centroid to tail vector
-  tail_land <- body_land[1, ]
-  centroid <- cent(body_land[-3, ])  # 3rd lm only for direction so not used
-  cent_tail_vect <- tail_land - centroid
-
-  # scale centroid-to-tail-vector
-  cent_tail_vect_scaled <- cent_tail_vect * scaling
-  tail_extend <- centroid + cent_tail_vect_scaled
-
-  # perpendicular line to cent-tail vect
-  slope_ct <- cent_tail_vect[2] / cent_tail_vect[1]  # cent-tail vector slope
-  slope_ct_perp <- -1/slope_ct  # slope of perpendicular line
-  intercept_ct_perp <- tail_extend[2] - (slope_ct_perp * tail_extend[1])
-
-  # create arbitrarily extended vectors to both sides and turn it into unit vector
-  # Difference to flux: extend to only one side
-  # Note: did not consider the case where y = x (vertical line)
-  ext <- 50  # arbitrarily set
-  ext1 <- c(ext, ext * slope_ct_perp)  # arbitraty vector
-  unit_ext <- unitv(ext1)  # unit vector of ext1
-  # determine the direction of unit_ext by dot product with cent-to-3rdlandmark vector
-  cent_3rd_vect <- body_land[3, ] - centroid
-  unit_ext_sign<- sign(unit_ext %*% cent_3rd_vect)
-  # take only the ext in same direction as the cent-to-3rdlandmark vector
-  flux_line_pt <- tail_extend + unit_ext * unit_ext_sign * body_height* 1.5
-
-  # return
-  fluxln <- as.list(c(tail_extend, flux_line_pt))
-  names(fluxln) <- c('x0', 'y0', 'x1', 'y1')
-  return(fluxln)
-}
-
-
 # permutational t-test, two tailed
 perm_ttest <- function(x, y, perm = 999, seed = 8888, plot = FALSE) {
   set.seed(seed)
@@ -259,12 +187,12 @@ perm_ttest <- function(x, y, perm = 999, seed = 8888, plot = FALSE) {
   }
   pval = sum(abs(c(null_diff, obs_diff)) >= abs(obs_diff)) / (perm+1)
   if (plot == TRUE) {
-    hist(null_diff, col = 'gray', main = '', freq = FALSE, 
+    hist(null_diff, col = 'gray', main = '', freq = FALSE,
          xlab = 'Mean difference')
     abline(v = obs_diff, col = 'blue')
-    legend('topleft', bg = 'white', pch = c(22, NA), lty = c(NA, 1), 
-           col = c('black', 'blue'), pt.bg = c('grey', NA), 
-           legend = c('Null distribution', 'Observed'), 
+    legend('topleft', bg = 'white', pch = c(22, NA), lty = c(NA, 1),
+           col = c('black', 'blue'), pt.bg = c('grey', NA),
+           legend = c('Null distribution', 'Observed'),
            inset = 0.01)
     box()
   }
@@ -272,9 +200,9 @@ perm_ttest <- function(x, y, perm = 999, seed = 8888, plot = FALSE) {
 }
 
 # utility tool to find the peak fluid speed (at certain quantile) of a frame
-# peak_id = frame to find the peak fluid speed 
+# peak_id = frame to find the peak fluid speed
 # (e.g. middle of power stroke with peak power)
-# quan = which quantile, 95% u of that frame (95% excluding the min, where u  
+# quan = which quantile, 95% u of that frame (95% excluding the min, where u
 # below min is regarded as noise)
 max_u <- function(dir, peak_id, quan = 0.99, min = 0.0005) {
   dat <- read_davis(file.path(dir, get_file(peak_id)))
