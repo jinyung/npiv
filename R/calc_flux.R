@@ -45,7 +45,7 @@ tcalc_flux <-function(body_land_array, vf_dir, id, vect_scal,
                            refv = refv[i],
                            vect_scal = vect_scal,
                            ln_width = ln_width, ln_width_scal = ln_width_scal,
-                           side = side,
+                           side = side, type = type, 
                            body_land = body_land_array[, , i], scal = scal)
   }
 

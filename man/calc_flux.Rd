@@ -8,7 +8,7 @@ Calculate 2D 'flux' over a line segment.
 }
 \usage{
 calc_flux(FUN = get_fluxln, vf_path, side = c('right', 'left'),
-  refv = 0, width, ...) 
+  refv = 0, width, scal, ...) 
   
 tcalc_flux(body_land_array, vf_dir, id, vect_scal, 
   type = c('top', 'side'), relative = TRUE, ln_width, 
