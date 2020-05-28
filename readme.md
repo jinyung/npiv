@@ -25,6 +25,7 @@ in [OSF repository](https://osf.io/r9abn/).
 ___
 
 **Notes on using python module from the package**
+
 Functions for kinematics analysis was written in `python` and is located in
 [`kinematics.py` module](inst/python/kinematics.py). The module is imported into
 `R` when the package is loaded via
@@ -33,8 +34,6 @@ object*, and the functions can be called with `kt$<function name>`. Help file
 can be accessed with `reticulate::py_help` function, e.g.
 `reticulate::py_help(kt)` will show the help messages for all functions in the
 module**.
-
-NOTES: 
 
 \* Please refrain from naming `R` object as `kt`.
 
